@@ -302,7 +302,7 @@ class Saml2Plugin(p.SingletonPlugin):
         if not name_id:
             log.info('Ignoring REMOTE_USER - does not look like a NameID')
             return
-        log.debug('NameId: %s' % (name_id))
+        log.info('NameId: %s' % (name_id))
 
         saml2_user_info = saml2_get_user_info(name_id)
         if saml2_user_info is not None:
@@ -401,6 +401,7 @@ class Saml2Plugin(p.SingletonPlugin):
         is_new_user = False
         userobj = model.User.get(user_name)
         if userobj is None:
+            log.info("Creating new user because user was not found: \"{0}\"".format(user_name))
             is_new_user = True
             user_schema = schema.default_user_schema()
         else:
