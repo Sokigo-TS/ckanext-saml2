@@ -306,7 +306,10 @@ class Saml2Plugin(p.SingletonPlugin):
 
         saml2_user_info = saml2_get_user_info(name_id)
         if saml2_user_info is not None:
+            log.debug("saml2_user_info was found for name_id: \"{0}\"".format(name_id))
             c.user = saml2_user_info[1].name
+        else:
+            log.info("saml2_user_info was NOT found for name_id: \"{0}\"".format(name_id))
 
         log.debug("repoze.who.identity = {0}".format(dict(environ["repoze.who.identity"])))
 
@@ -431,9 +434,12 @@ class Saml2Plugin(p.SingletonPlugin):
             email = _take_from_saml_or_user('email', saml_info, data_dict)
             new_user_username = _get_random_username_from_email(email)
 
-            name_id_from_saml2_NameID = config.get('saml2.name_id_from_saml2_NameID', False)
-            if not name_id_from_saml2_NameID:
+            name_id_from_saml2_NameID = p.toolkit.asbool(config.get('saml2.name_id_from_saml2_nameid', False))
+            if name_id_from_saml2_NameID:
+                log.debug("Saving to saml2_users-table using name_id: \"{0}\"".format(name_id))
+            else
                 name_id = _take_from_saml_or_user('id', saml_info, data_dict)
+                log.debug("Saving to saml2_users-table using name_id: \"{0}\"".format(name_id))
             data_dict['name'] = new_user_username
             data_dict['id'] = unicode(uuid.uuid4())
             log.debug("Creating user: %s", data_dict)
@@ -472,7 +478,6 @@ class Saml2Plugin(p.SingletonPlugin):
         }
 
         """
-
         create_orgs = p.toolkit.asbool(
             config.get('saml2.create_missing_orgs', False))
         remove_user_from_orgs = p.toolkit.asbool(
