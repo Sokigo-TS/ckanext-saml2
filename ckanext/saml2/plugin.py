@@ -437,7 +437,7 @@ class Saml2Plugin(p.SingletonPlugin):
             name_id_from_saml2_NameID = p.toolkit.asbool(config.get('saml2.name_id_from_saml2_nameid', False))
             if name_id_from_saml2_NameID:
                 log.debug("Saving to saml2_users-table using name_id: \"{0}\"".format(name_id))
-            else
+            else:
                 name_id = _take_from_saml_or_user('id', saml_info, data_dict)
                 log.debug("Saving to saml2_users-table using name_id: \"{0}\"".format(name_id))
             data_dict['name'] = new_user_username
@@ -478,6 +478,7 @@ class Saml2Plugin(p.SingletonPlugin):
         }
 
         """
+        
         create_orgs = p.toolkit.asbool(
             config.get('saml2.create_missing_orgs', False))
         remove_user_from_orgs = p.toolkit.asbool(
