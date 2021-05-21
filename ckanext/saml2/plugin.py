@@ -566,8 +566,11 @@ class Saml2Plugin(p.SingletonPlugin):
         """
         came_from = config.get('saml2.redirect_after_login', '/dashboard')
         referer = p.toolkit.request.environ['HTTP_REFERER']
-        if came_from == 'HTTP_REFERER' and referer and p.toolkit.request.environ['HTTP_HOST'] == urlparse.urlparse(referer).hostname:
-            came_from = urlparse.urlparse(referer).path
+        if came_from == 'HTTP_REFERER':
+            if referer and func.lower(p.toolkit.request.environ['HTTP_HOST']) == func.lower(urlparse.urlparse(referer).hostname):
+                came_from = urlparse.urlparse(referer).path
+            else:
+                came_from = '/dashboard'
         if came_from == '/' or came_from == '':
             came_from = '/start'
         
